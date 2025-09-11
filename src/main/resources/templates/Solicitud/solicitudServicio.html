@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Solicitud de Servicio</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <style>
+        .container{max-width:900px;margin:40px auto;padding:20px;background:#fff;border-radius:12px;box-shadow:0 4px 16px rgba(0,0,0,.1)}
+        .tabs{display:flex;gap:6px;margin:16px 0 12px}
+        .tab{flex:1;text-align:center;padding:10px;border:1px solid #efd8cf;border-radius:10px;background:#fbeae0;font-weight:800;color:#563d37;opacity:.6}
+        .tab.on{background:#c77462;color:#fff;opacity:1}
+        .panel{display:none;animation:fade .12s ease}
+        .panel.on{display:block}
+        @keyframes fade{from{opacity:.8;transform:translateY(2px)} to{opacity:1;transform:translateY(0)}}
+        .field{display:grid;gap:8px;margin:14px 0}
+        textarea,input[type="text"]{width:100%;padding:10px;border:1px solid #efdfd7;border-radius:10px;font:inherit}
+        .row{display:flex;gap:10px;flex-wrap:wrap}
+        .btn{display:inline-block;padding:10px 16px;border-radius:10px;font-weight:800;border:1px solid #efdfd7;background:#fff;color:#a45445;cursor:pointer}
+        .btn.primary{background:#c77462;border-color:#c77462;color:#fff}
+        .btn.primary:hover{background:#a45445}
+        .muted{color:#7a6f68;font-size:.92rem}
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Solicitar servicio</h1>
+
+    <div class="muted" style="margin-bottom:12px">
+        <strong th:text="${servicio.nombre}">Nombre</strong> ·
+        $<span th:text="${servicio.precio}">0</span> COP ·
+        <span th:text="${servicio.proveedor != null ? servicio.proveedor.nombreUsuario : 'Sin asignar'}">Proveedor</span>
+    </div>
+
+    <!-- Wizard Tabs -->
+    <div class="tabs">
+        <div id="tab1" class="tab on">1) Especificaciones</div>
+        <div id="tab2" class="tab">2) Confirmar dirección</div>
+    </div>
+
+    <form th:action="@{/solicitud/guardar}" method="post" id="formSolicitud">
+        <input type="hidden" name="idServicio" th:value="${servicio.idServicio}">
+
+        <!-- Paso 1 -->
+        <section id="panel1" class="panel on">
+            <div class="field">
+                <label for="detalles"><strong>¿Deseas añadir especificaciones?</strong></label>
+                <textarea id="detalles" name="detalles" maxlength="500" rows="5"
+                          placeholder="Ej: Cortinas 2m x 3m, color beige; instalación el sábado en la mañana."
+                          required></textarea>
+                <small class="muted">Máx. 500 caracteres</small>
+            </div>
+            <div class="row">
+                <button type="button" class="btn primary" onclick="goStep(2)">Guardar y continuar →</button>
+            </div>
+        </section>
+
+        <!-- Paso 2 -->
+        <section id="panel2" class="panel">
+            <div class="field">
+                <label for="direccionEntrega"><strong>Confirma la dirección</strong></label>
+                <input id="direccionEntrega" name="direccionEntrega" type="text" maxlength="180"
+                       placeholder="Ej: Calle 123 #45-67, Apto 302, Barrio Centro, Tunja"
+                       required>
+                <small class="muted">Usaremos esta dirección para la prestación/envío del servicio.</small>
+            </div>
+            <div class="row">
+                <button type="button" class="btn" onclick="goStep(1)">← Volver</button>
+                <button type="submit" class="btn primary">Solicitar</button>
+            </div>
+        </section>
+    </form>
+</div>
+
+<script>
+    function goStep(n){
+      // pestañas
+      document.getElementById('tab1').classList.toggle('on', n===1);
+      document.getElementById('tab2').classList.toggle('on', n===2);
+      // paneles
+      document.getElementById('panel1').classList.toggle('on', n===1);
+      document.getElementById('panel2').classList.toggle('on', n===2);
+      // foco amable
+      setTimeout(()=>{
+        if(n===1) document.getElementById('detalles').focus();
+        if(n===2) document.getElementById('direccionEntrega').focus();
+      }, 60);
+    }
+</script>
+</body>
+</html>

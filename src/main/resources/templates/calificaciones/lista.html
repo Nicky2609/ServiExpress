@@ -1,0 +1,125 @@
+<!-- src/main/resources/templates/calificaciones/lista.html -->
+<!doctype html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>Calificaciones</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+
+    <style>
+        :root{
+            --bg:#F8EDE3; --card:#FFFFFF; --ring:#E9DAD0;
+            --chip:#DFD3C3; --chip-text:#4B3F36;
+            --brand:#C5705D; --brand-2:#a85848;
+            --text:#2b2320; --muted:#7a6a60; --shadow:rgba(0,0,0,.06);
+        }
+        *{box-sizing:border-box}
+        body{
+            margin:0; background:
+                radial-gradient(1200px 700px at 10% -10%, #fff0 60%, #f2e7df 61%) no-repeat,
+                linear-gradient(180deg,#fff,var(--bg));
+            color:var(--text);
+            font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial;
+        }
+        .wrap{max-width:1100px;margin:34px auto;padding:0 20px}
+        .head{
+            display:flex; align-items:center; gap:16px; margin-bottom:18px;
+        }
+        h1{font-size:clamp(26px,3.2vw,36px); margin:0; font-weight:800;}
+        .spacer{flex:1}
+        .btn{
+            display:inline-flex; align-items:center; gap:8px;
+            padding:10px 16px; border-radius:12px; font-weight:700;
+            text-decoration:none; border:1px solid var(--brand); color:#fff; background:var(--brand);
+            box-shadow:0 6px 16px rgba(197,112,93,.25);
+        }
+        .btn:hover{background:var(--brand-2)}
+        .filters{display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin:14px 0 8px}
+        .filters .lbl{color:var(--muted); font-weight:700}
+        .chip{
+            display:inline-flex; align-items:center; gap:6px;
+            padding:8px 12px; border-radius:999px; background:var(--chip);
+            color:var(--chip-text); text-decoration:none; font-weight:800;
+            border:1px solid var(--ring);
+            transition:transform .06s ease, filter .12s ease;
+        }
+        .chip:hover{transform:translateY(-1px)}
+        .chip.active{background:#ffe9d7; border-color:#ffd1b9}
+        .stars-sm{letter-spacing:1px; font-size:15px}
+        .grid{
+            display:grid; grid-template-columns:repeat(auto-fill,minmax(420px,1fr)); gap:18px;
+        }
+        .card{
+            background:var(--card); border:1px solid var(--ring); border-radius:18px;
+            box-shadow:0 18px 40px var(--shadow);
+            padding:18px 18px 20px;
+        }
+        .meta{display:flex; align-items:center; justify-content:space-between; gap:10px}
+        .when{font-weight:800}
+        .stars{font-size:18px; letter-spacing:2px}
+        .comment{margin:14px 0 10px; color:#3b312c}
+        .row-muted{color:var(--muted); display:flex; gap:14px; flex-wrap:wrap}
+        .row-muted b{color:#4b3f36}
+        @media (max-width:520px){ .grid{grid-template-columns:1fr} }
+    </style>
+</head>
+<body>
+<nav class="navbar">
+    <div class="inner container">
+        <div class="brand">
+            <a th:href="@{/}">ServiExpress</a>
+        </div>
+    </div>
+</nav>
+<div class="wrap">
+
+
+    <!-- FILTROS -->
+    <div class="filters">
+        <span class="lbl">Filtrar por estrellas:</span>
+
+        <a class="chip" th:classappend="${rating} == null ? ' active' : ''"
+           th:href="@{/calificaciones}">Todas</a>
+
+        <a class="chip" th:classappend="${rating} == 1 ? ' active' : ''"
+           th:href="@{/calificaciones(rating=1)}"><span class="stars-sm">★☆☆☆☆</span></a>
+
+        <a class="chip" th:classappend="${rating} == 2 ? ' active' : ''"
+           th:href="@{/calificaciones(rating=2)}"><span class="stars-sm">★★☆☆☆</span></a>
+
+        <a class="chip" th:classappend="${rating} == 3 ? ' active' : ''"
+           th:href="@{/calificaciones(rating=3)}"><span class="stars-sm">★★★☆☆</span></a>
+
+        <a class="chip" th:classappend="${rating} == 4 ? ' active' : ''"
+           th:href="@{/calificaciones(rating=4)}"><span class="stars-sm">★★★★☆</span></a>
+
+        <a class="chip" th:classappend="${rating} == 5 ? ' active' : ''"
+           th:href="@{/calificaciones(rating=5)}"><span class="stars-sm">★★★★★</span></a>
+    </div>
+
+    <!-- LISTA EN CARDS -->
+    <div class="grid">
+        <article class="card" th:each="c : ${calificaciones}">
+            <div class="meta">
+                <div class="when" th:text="${#temporals.format(c.fecha, 'yyyy-MM-dd HH:mm')}">2025-09-06 22:40</div>
+                <div class="stars"
+                     th:text="${'★'.repeat(c.puntuacion) + '☆'.repeat(5 - c.puntuacion)}">★★★★★</div>
+            </div>
+
+            <div class="comment" th:text="${c.comentario}">Comentario…</div>
+
+            <div class="row-muted">
+                <span>Proveedor: <b th:text="${c.proveedor.nombreUsuario}">—</b></span>
+                <span>Servicio: <b th:text="${c.servicio != null ? c.servicio.nombre : '—'}">—</b></span>
+                <span>Cliente: <b th:text="${c.cliente.nombreUsuario}">—</b></span>
+            </div>
+        </article>
+
+        <div th:if="${#lists.isEmpty(calificaciones)}" class="card">
+            <div class="comment">No hay calificaciones para este filtro.</div>
+        </div>
+    </div>
+
+</div>
+</body>
+</html>
